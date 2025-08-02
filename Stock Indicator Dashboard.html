@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stock Indicator Dashboard</title>
+  <style>
+    body { font-family: sans-serif; background: #0b0c10; color: #fff; padding: 2rem; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { border: 1px solid #444; padding: 8px; text-align: center; }
+    th { background-color: #1f2833; }
+    .bullish { background-color: #14532d; }
+    .bearish { background-color: #7f1d1d; }
+    .neutral { background-color: #374151; }
+  </style>
+</head>
+<body>
+  <h1>Stock Pine Script Indicator Dashboard</h1>
+
+  <table id="stockTable">
+    <thead>
+      <tr>
+        <th>Symbol</th>
+        <th>Trend</th>
+        <th>MACD</th>
+        <th>RSI</th>
+        <th>Volume Spike</th>
+        <th>Status</th>
+        <th>Updated</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const sheetURL = "https://docs.google.com/spreadsheets/d/1EoC6tg8snAnOU4bgqRr4bYQJ4zf58cYLVXuVArUPtBg/gviz/tq?tqx=out:json&sheet=Stocks";
+
+    async function fetchSheet() {
+      try {
+        const res = await fetch(sheetURL);
+        const text = await res.text();
+        const json = JSON.parse(text.substr(47).slice(0, -2));
+
+        const tbody = document.querySelector("#stockTable tbody");
+        tbody.innerHTML = "";
+
+        json.table.rows.forEach(row => {
+          const cells = row.c.map(c => c?.v ?? "");
+          const [symbol, trend, macd, rsi, volSpike, status, time] = cells;
+
+          const tr = document.createElement("tr");
+          tr.className = trend.toLowerCase() === 'up' ? 'bullish' : trend.toLowerCase() === 'down' ? 'bearish' : 'neutral';
+
+          tr.innerHTML = `
+            <td>${symbol}</td>
+            <td>${trend}</td>
+            <td>${macd}</td>
+            <td>${rsi}</td>
+            <td>${volSpike}</td>
+            <td>${status}</td>
+            <td>${time}</td>
+          `;
+
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error("Failed to fetch stock data:", err);
+      }
+    }
+
+    fetchSheet();
+    setInterval(fetchSheet, 10000);
+  </script>
+</body>
+</html>

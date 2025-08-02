@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Real-Time Signal Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #111; color: #fff; padding: 20px; }
+    h1 { color: #00ffcc; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 8px 12px; border: 1px solid #444; text-align: center; }
+    th { background-color: #222; }
+    tr.buy { background-color: #003300; }
+    tr.sell { background-color: #330000; }
+    tr.hit-tp { background-color: #004400; font-weight: bold; }
+    tr.hit-sl { background-color: #440000; font-weight: bold; }
+    tr.open { background-color: #222222; }
+  </style>
+</head>
+<body>
+  <h1>Real-Time Trading Signals</h1>
+  <table id="signalTable">
+    <thead>
+      <tr>
+        <th>Symbol</th>
+        <th>Signal</th>
+        <th>Trend</th>
+        <th>Entry</th>
+        <th>TP</th>
+        <th>SL</th>
+        <th>RR</th>
+        <th>Size</th>
+        <th>Status</th>
+        <th>Last Updated</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const sheetURL = "https://docs.google.com/spreadsheets/d/1EoC6tg8snAnOU4bgqRr4bYQJ4zf58cYLVXuVArUPtBg/gviz/tq?tqx=out:json&sheet=Dashboard";
+
+    async function fetchSheet() {
+      try {
+        const res = await fetch(sheetURL);
+        const text = await res.text();
+        const json = JSON.parse(text.substr(47).slice(0, -2));
+
+        const table = document.querySelector("#signalTable tbody");
+        table.innerHTML = "";
+
+        json.table.rows.forEach(row => {
+          const values = row.c.map(cell => cell?.v ?? "");
+          const [symbol, signal, trend, entry, tp, sl, rr, size, status, time] = values;
+          let tr = document.createElement("tr");
+
+          tr.classList.add(
+            signal.toLowerCase() === "buy" ? "buy" : signal.toLowerCase() === "sell" ? "sell" : "",
+            status.toLowerCase().replace(" ", "-")
+          );
+
+          tr.innerHTML = `
+            <td>${symbol}</td>
+            <td>${signal}</td>
+            <td>${trend}</td>
+            <td>${entry}</td>
+            <td>${tp}</td>
+            <td>${sl}</td>
+            <td>${rr}</td>
+            <td>${size}</td>
+            <td>${status}</td>
+            <td>${time}</td>
+          `;
+          table.appendChild(tr);
+        });
+      } catch (e) {
+        console.error("Fetch error:", e);
+      }
+    }
+
+    fetchSheet();
+    setInterval(fetchSheet, 10000); // refresh every 10s
+  </script>
+</body>
+</html>

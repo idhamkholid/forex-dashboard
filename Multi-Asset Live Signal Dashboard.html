@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Live Signal Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <meta http-equiv="refresh" content="60"> <!-- Auto refresh setiap 60 detik -->
+</head>
+<body class="bg-gray-900 text-white p-6">
+  <h1 class="text-2xl font-bold mb-4">📊 Multi-Asset Live Signal Dashboard</h1>
+
+  <div class="grid grid-cols-2 md:grid-cols-3 gap-4" id="dashboard">
+    <!-- Cards will be injected here -->
+  </div>
+
+  <script>
+    // Contoh data dummy (replace with fetch from Google Sheets JSON or Firebase)
+    const signals = [
+      { symbol: "XAUUSD", signal: "BUY", price: 1987.5, trend: "UP", volume: true, rr: "2.3" },
+      { symbol: "USOIL", signal: "SELL", price: 82.3, trend: "DOWN", volume: true, rr: "1.5" },
+    ];
+
+    const dashboard = document.getElementById("dashboard");
+    signals.forEach(s => {
+      dashboard.innerHTML += `
+        <div class="bg-gray-800 p-4 rounded-xl shadow-md">
+          <h2 class="text-xl font-bold mb-1">${s.symbol}</h2>
+          <p>Signal: <span class="${s.signal === 'BUY' ? 'text-green-400' : 'text-red-400'} font-semibold">${s.signal}</span></p>
+          <p>Trend: ${s.trend}</p>
+          <p>Price: $${s.price}</p>
+          <p>RR: ${s.rr}</p>
+          <p>Volume Spike: ${s.volume ? '✅' : '❌'}</p>
+        </div>`;
+    });
+  </script>
+</body>
+</html>

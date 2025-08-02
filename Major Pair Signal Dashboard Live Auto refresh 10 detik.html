@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Live Signal Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white p-6">
+  <h1 class="text-2xl font-bold mb-4">📊 Major Pair Signal Dashboard</h1>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="dashboard"></div>
+
+  <script>
+    async function fetchData() {
+      // Simulasi: bisa ganti ini dengan fetch dari Google Sheets JSON/API
+      const data = [
+        {
+          symbol: "EURUSD",
+          signal: "BUY",
+          trend: "UP",
+          entry: 1.0950,
+          tp: 1.1005,
+          sl: 1.0925,
+          rr: 2.2,
+          volumeSpike: true,
+          size: 0.03
+        },
+        {
+          symbol: "GBPUSD",
+          signal: "SELL",
+          trend: "DOWN",
+          entry: 1.2780,
+          tp: 1.2700,
+          sl: 1.2810,
+          rr: 2.0,
+          volumeSpike: true,
+          size: 0.02
+        }
+      ];
+
+      const dashboard = document.getElementById("dashboard");
+      dashboard.innerHTML = ""; // bersihkan tampilan sebelum update
+
+      data.forEach(s => {
+        dashboard.innerHTML += `
+          <div class="bg-gray-800 p-4 rounded-xl shadow-md">
+            <h2 class="text-xl font-bold mb-2">${s.symbol}</h2>
+            <p>Signal: <span class="${s.signal === 'BUY' ? 'text-green-400' : 'text-red-400'} font-semibold">${s.signal}</span></p>
+            <p>Trend: ${s.trend}</p>
+            <p>Entry: ${s.entry}</p>
+            <p>TP: ${s.tp}</p>
+            <p>SL: ${s.sl}</p>
+            <p>RR: ${s.rr}</p>
+            <p>Size: ${s.size} lot</p>
+            <p>Volume Spike: ${s.volumeSpike ? '✅' : '❌'}</p>
+          </div>
+        `;
+      });
+    }
+
+    // Load data pertama kali
+    fetchData();
+
+    // Auto-refresh setiap 10 detik
+    setInterval(fetchData, 10000);
+  </script>
+</body>
+</html>
